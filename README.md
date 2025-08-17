@@ -234,8 +234,12 @@ The application is specifically optimized for **Vercel's serverless platform**:
 
 #### Deployment Steps
 
-1. **Push to GitHub**
+1. **Prepare and Push to GitHub**
    ```bash
+   # Ensure frontend is built
+   cd frontend && pnpm run build && cd ..
+   
+   # Commit and push
    git add .
    git commit -m "Ready for Vercel deployment"
    git push origin main
@@ -245,6 +249,7 @@ The application is specifically optimized for **Vercel's serverless platform**:
    - Go to [vercel.com](https://vercel.com) and sign in
    - Click "Import Project" and select your GitHub repo
    - Vercel will auto-detect the configuration from `vercel.json`
+   - **Important**: No manual configuration needed - everything is in `vercel.json`
    - Set environment variables (optional):
      - `PREDICTHQ_TOKEN`: Your PredictHQ API token
 
@@ -255,6 +260,20 @@ The application is specifically optimized for **Vercel's serverless platform**:
 
    # Deploy
    vercel --prod
+   ```
+
+4. **Vercel Configuration Details**
+   ```json
+   {
+     "builds": [
+       { "src": "server.js", "use": "@vercel/node" },
+       { "src": "frontend/package.json", "use": "@vercel/static-build" }
+     ],
+     "routes": [
+       { "src": "/api/(.*)", "dest": "/server.js" },
+       { "src": "/(.*)", "dest": "/server.js" }
+     ]
+   }
    ```
 
 #### How File Storage Works on Vercel
