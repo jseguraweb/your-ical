@@ -71,6 +71,25 @@
         <span class="font-medium">{{ errorMessage }}</span>
       </div>
     </div>
+
+    <!-- Success Message -->
+    <div v-if="calendarData && calendarData.success" class="mt-6 p-4 bg-green-50 border border-green-200 text-green-800 rounded-xl">
+      <div class="flex items-center">
+        <div class="inline-flex items-center justify-center w-6 h-6 bg-green-500 rounded-lg mr-3">
+          <i class="fas fa-check text-white text-xs"></i>
+        </div>
+        <span class="font-medium">{{ calendarData.eventCount }} events generated successfully!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Events Display Section -->
+  <div v-if="calendarData && calendarData.events && calendarData.events.length > 0" class="mt-8">
+    <EventsDisplay 
+      :events="calendarData.events"
+      :download-url="calendarData.downloadUrl"
+      :event-count="calendarData.eventCount"
+    />
   </div>
 </template>
 
@@ -96,6 +115,7 @@
 import { ref, onMounted, type Ref } from 'vue'
 import axios from 'axios'
 import LocationSearch from './LocationSearch.vue'
+import EventsDisplay from './EventsDisplay.vue'
 
 // TypeScript interfaces for strong typing and better maintainability
 interface Category {
@@ -110,11 +130,21 @@ interface SelectedLocation {
   lon: string         // Longitude coordinate
 }
 
+interface Event {
+  title: string
+  startDate: string | Date
+  endDate: string | Date
+  location?: string
+  description?: string
+}
+
 interface CalendarResponse {
   success: boolean      // Whether the operation succeeded
   eventCount?: number   // Number of events generated (optional)
   downloadUrl?: string  // URL to download the .ics file (optional)
   error?: string       // Error message if operation failed (optional)
+  events?: Event[]     // Array of events for display (optional)
+  sessionId?: string   // Session ID for tracking (optional)
 }
 
 // Component event emissions with TypeScript typing
@@ -129,6 +159,7 @@ const weeks: Ref<number> = ref(4)                                               
 const availableCategories: Ref<Category[]> = ref([])                               // Categories loaded from API
 const loading: Ref<boolean> = ref(false)                                          // Form submission state
 const errorMessage: Ref<string> = ref('')                                         // Error display
+const calendarData: Ref<CalendarResponse | null> = ref(null)                      // Generated calendar data
 
 // Component lifecycle hook - runs when component is mounted
 onMounted(async () => {
@@ -167,9 +198,10 @@ const generateCalendar = async (): Promise<void> => {
   // Validation - ensure location is selected
   if (!selectedLocation.value) return
   
-  // Set loading state and clear previous errors
+  // Set loading state and clear previous data
   loading.value = true
   errorMessage.value = ''
+  calendarData.value = null
 
   try {
     // Call backend API to generate calendar
@@ -181,7 +213,8 @@ const generateCalendar = async (): Promise<void> => {
     })
 
     if (response.data.success) {
-      // Success - emit event to parent component (App.vue)
+      // Success - store data for display and emit to parent
+      calendarData.value = response.data
       emit('calendar-generated', response.data)
     } else {
       // Backend returned an error
