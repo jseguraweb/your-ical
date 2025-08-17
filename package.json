@@ -1,0 +1,30 @@
+{
+  "name": "calendar-cron",
+  "version": "1.0.0",
+  "description": "Daily cron job to fetch events from PredictHQ and serve as iCalendar",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "cron": "node cron.js",
+    "dev": "nodemon server.js",
+    "web": "node server.js",
+    "build": "cd frontend && pnpm install && pnpm run build",
+    "build:frontend": "cd frontend && pnpm run build",
+    "deploy": "pnpm run build && vercel --prod",
+    "vercel-build": "pnpm run build:frontend"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "express": "^4.19.2",
+    "ical-generator": "^7.1.0",
+    "node-cron": "^3.0.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
