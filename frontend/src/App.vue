@@ -14,10 +14,8 @@
             Generate personalized event calendars for any location and interests with our intelligent event discovery platform
           </p>
         </div>
-
         <!-- Main Form -->
         <CalendarForm @calendar-generated="onCalendarGenerated" />
-
         <!-- Success Message -->
         <div v-if="successMessage" class="mt-8 p-6 bg-green-50/80 backdrop-blur-sm border border-green-200 text-green-800 rounded-2xl shadow-lg">
           <div class="flex items-center mb-4">
@@ -35,7 +33,6 @@
             Download Calendar
           </a>
         </div>
-
         <!-- Info Section -->
         <div class="mt-12 bg-white/80 backdrop-blur-sm border border-green-200 rounded-2xl p-8 shadow-lg">
           <h3 class="text-2xl font-bold text-green-900 mb-6 flex items-center">
