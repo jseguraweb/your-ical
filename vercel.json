@@ -1,14 +1,15 @@
 {
   "version": 2,
   "functions": {
-    "server.js": {
+    "api/server.js": {
+      "runtime": "@vercel/node@2.0.0",
       "maxDuration": 30
     }
   },
   "routes": [
-    { "src": "/api/(.*)", "dest": "server.js" },
-    { "src": "/download/(.*)", "dest": "server.js" },
-    { "src": "/api-docs", "dest": "server.js" },
+    { "src": "/api/(.*)", "dest": "/api/server.js" },
+    { "src": "/download/(.*)", "dest": "/api/server.js" },
+    { "src": "/api-docs", "dest": "/api/server.js" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
