@@ -1,12 +1,15 @@
 # 🚀 Vercel Deployment Fix
 
-## ✅ Problem Solved
+## ✅ Multiple Problems Solved
 
-The error `The 'functions' property cannot be used in conjunction with the 'builds' property` has been fixed.
+1. ❌ `The 'functions' property cannot be used in conjunction with the 'builds' property`
+2. ❌ `[vite]: Rollup failed to resolve import "/src/main.ts"`
+3. ❌ Missing public folder in GitHub repository
 
 ## 🔧 What Was Fixed
 
-### Before (❌ Broken):
+### Issue 1: Conflicting Vercel Configuration
+**Before (❌ Broken):**
 ```json
 {
   "builds": [...],
@@ -14,7 +17,7 @@ The error `The 'functions' property cannot be used in conjunction with the 'buil
 }
 ```
 
-### After (✅ Working):
+**After (✅ Working):**
 ```json
 {
   "builds": [
@@ -26,9 +29,31 @@ The error `The 'functions' property cannot be used in conjunction with the 'buil
     {
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "../public" }
+      "config": { "distDir": "dist" }  // ← Fixed path
     }
   ]
+}
+```
+
+### Issue 2: Vite Import Path
+**Before (❌ Broken):**
+```html
+<script type="module" src="/src/main.ts"></script>
+```
+
+**After (✅ Working):**
+```html
+<script type="module" src="./src/main.ts"></script>
+```
+
+### Issue 3: Static File Serving
+**Added smart path detection in server.js:**
+```javascript
+// Serve from different locations based on environment
+if (fs.existsSync(path.join(__dirname, 'public'))) {
+  app.use(express.static(path.join(__dirname, 'public')));
+} else if (fs.existsSync(path.join(__dirname, 'frontend/dist'))) {
+  app.use(express.static(path.join(__dirname, 'frontend/dist')));
 }
 ```
 

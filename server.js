@@ -177,7 +177,15 @@ const specs = swaggerJsdoc(swaggerOptions);
 
 // Middleware
 app.use(express.json());
-app.use(express.static('public'));
+
+// Serve static files - check multiple possible locations for Vercel compatibility
+if (fs.existsSync(path.join(__dirname, 'public'))) {
+  // Local development
+  app.use(express.static(path.join(__dirname, 'public')));
+} else if (fs.existsSync(path.join(__dirname, 'frontend/dist'))) {
+  // Vercel deployment
+  app.use(express.static(path.join(__dirname, 'frontend/dist')));
+}
 
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {

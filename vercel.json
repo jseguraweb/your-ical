@@ -12,7 +12,7 @@
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "../public"
+        "distDir": "dist"
       }
     }
   ],
@@ -24,10 +24,6 @@
     {
       "src": "/api-docs/(.*)",
       "dest": "/server.js"
-    },
-    {
-      "src": "/(.*\\.(js|css|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot))",
-      "dest": "/public/$1"
     },
     {
       "src": "/(.*)",
