@@ -3,11 +3,22 @@ const fs = require('fs');
 const path = require('path');
 
 function normalizeEvents(predictHQEvents) {
-  return predictHQEvents.map(event => ({
-    title: event.title || event.name || 'Event',
-    startDate: new Date(event.start || event.start_local || event.date),
-    endDate: new Date(event.end || event.end_local || event.date)
-  }));
+  return predictHQEvents.map(event => {
+    // Use start_local and end_local for proper timezone handling
+    // These fields contain the event time in the local timezone
+    const startDate = new Date(event.start_local || event.start || event.date);
+    const endDate = new Date(event.end_local || event.end || event.date);
+    
+    return {
+      title: event.title || event.name || 'Event',
+      startDate: startDate,
+      endDate: endDate,
+      location: event.geo?.address?.formatted_address || 
+                (event.geo?.address?.locality ? `${event.geo.address.locality}, Germany` : 'Germany'),
+      description: event.description || 
+                   (event.phq_labels ? event.phq_labels.map(label => label.label).join(', ') : 'Event')
+    };
+  });
 }
 
 function generateICalendar(events) {
@@ -17,64 +28,16 @@ function generateICalendar(events) {
     timezone: 'Europe/Berlin'
   });
 
-  // Create a better distribution: 5 events per day for 4 weeks
-  const today = new Date();
-  const maxEventsPerDay = 5;
-  const daysToFill = 28; // 4 weeks
-  
-  // Helper function to generate random time
-  function getRandomTime(date) {
-    const hour = Math.floor(Math.random() * 14) + 8; // 8 AM to 9 PM
-    const minute = Math.floor(Math.random() * 4) * 15; // 0, 15, 30, or 45 minutes
-    const newDate = new Date(date);
-    newDate.setHours(hour, minute, 0, 0);
-    return newDate;
-  }
-  
-  // Helper function to get random duration
-  function getRandomDuration() {
-    const durations = [60, 90, 120, 180]; // 1, 1.5, 2, or 3 hours in minutes
-    return durations[Math.floor(Math.random() * durations.length)];
-  }
-  
-  // Group events by days and limit to 5 per day
-  const distributedEvents = [];
-  let eventIndex = 0;
-  
-  for (let dayOffset = 0; dayOffset < daysToFill && eventIndex < events.length; dayOffset++) {
-    const currentDate = new Date(today);
-    currentDate.setDate(today.getDate() + dayOffset);
-    
-    let eventsForDay = 0;
-    
-    while (eventsForDay < maxEventsPerDay && eventIndex < events.length) {
-      const event = events[eventIndex];
-      
-      // Generate random start time and duration (overlaps allowed)
-      const eventStart = getRandomTime(currentDate);
-      const duration = getRandomDuration();
-      const eventEnd = new Date(eventStart.getTime() + duration * 60000);
-      
-      const newEvent = {
-        ...event,
-        startDate: eventStart,
-        endDate: eventEnd
-      };
-      
-      distributedEvents.push(newEvent);
-      eventIndex++;
-      eventsForDay++;
-    }
-  }
+  // Use the actual event times from the API instead of generating random ones
+  console.log(`Creating calendar with ${events.length} events using their actual times`);
 
-  console.log(`Creating calendar with ${distributedEvents.length} events distributed over ${daysToFill} days`);
-
-  distributedEvents.forEach((event, index) => {
+  events.forEach((event, index) => {
     calendar.createEvent({
       start: event.startDate,
       end: event.endDate,
       summary: event.title,
-      description: `Event from PredictHQ`,
+      description: event.description || `Event from PredictHQ`,
+      location: event.location || '',
       uid: `predicthq-${Date.now()}-${index}`
     });
   });

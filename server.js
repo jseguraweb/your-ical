@@ -202,6 +202,8 @@ function generateLocationEvents(locationInfo, categories, weeks) {
   const events = [];
   const categoryList = categories.split(',');
   const startDate = new Date();
+  // Start events from tomorrow instead of today
+  startDate.setDate(startDate.getDate() + 1);
   
   // Extract city name from location coordinates or use a default
   const cityName = locationInfo.cityName || 'Local Area';
@@ -268,10 +270,20 @@ function generateLocationEvents(locationInfo, categories, weeks) {
         const templates = eventTemplates[category] || eventTemplates['festivals'];
         const title = templates[Math.floor(Math.random() * templates.length)];
         
+        // Create realistic event start times (9 AM to 8 PM)
+        const eventStartTime = new Date(eventDate);
+        const startHour = 9 + Math.floor(Math.random() * 12); // 9 AM to 8 PM
+        const startMinute = Math.random() > 0.5 ? 0 : 30; // Either :00 or :30
+        eventStartTime.setHours(startHour, startMinute, 0, 0);
+        
+        // Event duration: 1-4 hours
+        const durationHours = 1 + Math.random() * 3;
+        const eventEndTime = new Date(eventStartTime.getTime() + durationHours * 60 * 60 * 1000);
+        
         events.push({
           title: title,
-          start: eventDate.toISOString(),
-          end: new Date(eventDate.getTime() + (2 + Math.random() * 2) * 60 * 60 * 1000).toISOString(),
+          start: eventStartTime.toISOString(),
+          end: eventEndTime.toISOString(),
           category: category
         });
       }
@@ -447,6 +459,7 @@ app.post('/api/generate-calendar', async (req, res) => {
       downloadUrl: `/api/download/${sessionId}`,
       eventCount: normalizedEvents.length,
       message: `Calendar generated successfully${useGeneratedEvents ? ' with location-specific events' : ''}`,
+      events: normalizedEvents, // Include events data for frontend display
       sessionId: sessionId
     });
 
