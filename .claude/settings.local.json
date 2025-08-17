@@ -14,7 +14,9 @@
       "Bash(pnpm start:*)",
       "Bash(pkill:*)",
       "Bash(mv:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

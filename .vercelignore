@@ -2,10 +2,8 @@
 node_modules/
 frontend/node_modules/
 
-# Development files
-frontend/src/
-frontend/vite.config.ts
-frontend/tsconfig.json
+# Development files (removed frontend/src/ - Vercel needs source files to build)
+# frontend/vite.config.ts - keeping .js version
 
 # Environment files
 .env.local
