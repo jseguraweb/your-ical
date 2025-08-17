@@ -9,21 +9,16 @@
 -->
 
 <template>
-  <div class="w-full max-w-4xl mx-auto p-6">
-    <!-- Header with download button -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Generated Events</h2>
-        <p class="text-sm text-gray-600 mt-1">{{ eventCount }} events found</p>
-      </div>
-      
-      <button
-        @click="downloadICS"
-        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        <i class="fas fa-download mr-2"></i>
-        Download .ics
-      </button>
+  <div class="bg-white/90 backdrop-blur-sm border border-green-200/50 shadow-xl shadow-green-100/50 rounded-2xl p-8">
+    <!-- Header -->
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold text-green-900 flex items-center">
+        <div class="inline-flex items-center justify-center w-8 h-8 bg-green-500 rounded-lg mr-3">
+          <i class="fas fa-calendar-day text-white text-sm"></i>
+        </div>
+        Your Events
+      </h2>
+      <p class="text-sm text-green-600 mt-2 ml-11">{{ eventCount }} events found for the next {{ Math.ceil(eventCount / 5) }} weeks</p>
     </div>
 
     <!-- Events grouped by day -->
@@ -31,19 +26,19 @@
       <div
         v-for="(dayData, date) in groupedEvents"
         :key="date"
-        class="border border-gray-200 rounded-lg overflow-hidden"
+        class="border border-green-200 rounded-xl overflow-hidden"
       >
         <!-- Day header (accordion trigger) -->
         <button
           @click="toggleDay(date)"
-          class="w-full px-6 py-4 bg-gray-50 text-left flex items-center justify-between hover:bg-gray-100 transition-colors"
+          class="w-full px-6 py-4 bg-green-50/80 text-left flex items-center justify-between hover:bg-green-100/80 transition-all duration-200 hover:transform hover:-translate-y-0.5"
         >
           <div>
-            <h3 class="font-semibold text-gray-900">{{ formatDate(date) }}</h3>
-            <p class="text-sm text-gray-600">{{ dayData.events.length }} events</p>
+            <h3 class="font-semibold text-green-900">{{ formatDate(date) }}</h3>
+            <p class="text-sm text-green-600">{{ dayData.events.length }} events</p>
           </div>
           <i
-            class="fas fa-chevron-down transition-transform duration-200"
+            class="fas fa-chevron-down transition-transform duration-200 text-green-500"
             :class="{ 'rotate-180': openDays.has(date) }"
           ></i>
         </button>
@@ -53,30 +48,30 @@
           v-show="openDays.has(date)"
           class="bg-white"
         >
-          <div class="divide-y divide-gray-100">
+          <div class="divide-y divide-green-100">
             <div
               v-for="event in dayData.events"
               :key="event.id || event.title"
-              class="px-6 py-4 hover:bg-gray-50 transition-colors"
+              class="px-6 py-4 hover:bg-green-50/50 transition-all duration-200 hover:transform hover:-translate-y-0.5"
             >
               <div class="flex items-start justify-between">
                 <div class="flex-1">
                   <!-- Event time -->
-                  <div class="text-sm text-blue-600 font-medium mb-1">
+                  <div class="text-sm text-green-600 font-medium mb-1">
                     {{ formatTime(event.startDate) }} - {{ formatTime(event.endDate) }}
                   </div>
                   
                   <!-- Event title -->
-                  <h4 class="font-semibold text-gray-900 mb-2">{{ event.title }}</h4>
+                  <h4 class="font-semibold text-green-900 mb-2">{{ event.title }}</h4>
                   
                   <!-- Event details -->
-                  <div class="text-sm text-gray-600 space-y-1">
+                  <div class="text-sm text-green-700 space-y-1">
                     <div v-if="event.location" class="flex items-center">
-                      <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+                      <i class="fas fa-map-marker-alt mr-2 text-green-500"></i>
                       {{ event.location }}
                     </div>
                     <div v-if="event.description" class="flex items-start">
-                      <i class="fas fa-info-circle mr-2 text-gray-400 mt-0.5"></i>
+                      <i class="fas fa-info-circle mr-2 text-green-500 mt-0.5"></i>
                       <span>{{ event.description }}</span>
                     </div>
                   </div>
@@ -95,14 +90,25 @@
       </div>
     </div>
 
+    <!-- Download Button -->
+    <div class="mt-6 text-center">
+      <button
+        @click="downloadICS"
+        class="inline-flex items-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+      >
+        <i class="fas fa-download mr-3"></i>
+        Download .ics Calendar
+      </button>
+    </div>
+
     <!-- Empty state -->
     <div
       v-if="!events || events.length === 0"
       class="text-center py-12"
     >
-      <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">No events found</h3>
-      <p class="text-gray-600">Try adjusting your search criteria or location.</p>
+      <i class="fas fa-calendar-times text-4xl text-green-400 mb-4"></i>
+      <h3 class="text-lg font-medium text-green-900 mb-2">No events found</h3>
+      <p class="text-green-600">Try adjusting your search criteria or location.</p>
     </div>
   </div>
 </template>

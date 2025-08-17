@@ -18,20 +18,12 @@
         <CalendarForm @calendar-generated="onCalendarGenerated" />
         <!-- Success Message -->
         <div v-if="successMessage" class="mt-8 p-6 bg-green-50/80 backdrop-blur-sm border border-green-200 text-green-800 rounded-2xl shadow-lg">
-          <div class="flex items-center mb-4">
+          <div class="flex items-center">
             <div class="inline-flex items-center justify-center w-8 h-8 bg-green-500 rounded-lg mr-3">
               <i class="fas fa-check text-white text-sm"></i>
             </div>
             <span class="font-medium text-lg">{{ successMessage }}</span>
           </div>
-          <a
-            :href="downloadUrl"
-            download
-            class="inline-flex items-center bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-          >
-            <i class="fas fa-download mr-2"></i>
-            Download Calendar
-          </a>
         </div>
         <!-- Info Section -->
         <div class="mt-12 bg-white/80 backdrop-blur-sm border border-green-200 rounded-2xl p-8 shadow-lg">
